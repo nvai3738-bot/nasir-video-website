@@ -6,175 +6,83 @@
 ‎  <title>Nasir Video Website</title>
 ‎
 ‎  <style>
-‎    * { box-sizing: border-box; }
+‎    * {
+‎      box-sizing: border-box;
+‎    }
+‎
 ‎    body {
 ‎      margin: 0;
 ‎      background: #101010;
 ‎      color: white;
 ‎      font-family: Arial, sans-serif;
 ‎    }
+‎
 ‎    header {
 ‎      background: #087f5b;
-‎      padding: 18px 10px;
 ‎      text-align: center;
+‎      padding: 22px 10px;
 ‎    }
-‎    h1 { margin: 0; font-size: 25px; }
-‎    #status {
-‎      text-align: center;
-‎      padding: 14px;
-‎      color: #ddd;
+‎
+‎    h1 {
+‎      margin: 0;
+‎      font-size: 26px;
 ‎    }
-‎    #videos {
-‎      display: grid;
-‎      grid-template-columns: 1fr;
-‎      gap: 18px;
-‎      padding: 12px;
-‎      max-width: 850px;
-‎      margin: auto;
+‎
+‎    .video-container {
+‎      max-width: 800px;
+‎      margin: 25px auto;
+‎      padding: 15px;
 ‎    }
+‎
 ‎    .video-card {
 ‎      background: #202020;
-‎      border-radius: 10px;
-‎      padding: 10px;
-‎      overflow: hidden;
+‎      padding: 12px;
+‎      border-radius: 12px;
 ‎    }
-‎    .video-card video {
-‎      display: block;
+‎
+‎    video {
 ‎      width: 100%;
-‎      max-height: 480px;
-‎      background: #000;
-‎      border-radius: 7px;
+‎      display: block;
+‎      background: black;
+‎      border-radius: 8px;
 ‎    }
-‎    .video-card h3 {
-‎      font-size: 16px;
+‎
+‎    h2 {
+‎      font-size: 18px;
 ‎      overflow-wrap: anywhere;
+‎    }
+‎
+‎    footer {
+‎      text-align: center;
+‎      color: #aaa;
+‎      padding: 20px;
 ‎    }
 ‎  </style>
 ‎</head>
 ‎
 ‎<body>
+‎
 ‎  <header>
 ‎    <h1>Nasir Video Website</h1>
 ‎    <p>আমার ভিডিও সংগ্রহ</p>
 ‎  </header>
 ‎
-‎  <p id="status">ভিডিও লোড হচ্ছে...</p>
-‎  <main id="videos"></main>
+‎  <main class="video-container">
+‎    <div class="video-card">
+‎      <h2>আমার ভিডিও</h2>
 ‎
-‎  <script>
-‎    const SUPABASE_URL =
-‎      "https://cvvttwjqbxlojfkktxzo.supabase.co";
+‎      <video controls playsinline preload="metadata">
+‎        <source
+‎          src="https://cvvttwjqbxlojfkktxzo.supabase.co/storage/v1/object/public/videos/bd52c59e3e2491455fe06b93cdb04751.mp4"
+‎          type="video/mp4">
+‎        তোমার ব্রাউজার ভিডিও চালাতে পারছে না।
+‎      </video>
+‎    </div>
+‎  </main>
 ‎
-‎    // এখানে নিজের Supabase Publishable key বসাবে
-‎    const SUPABASE_KEY = "YOUR_SUPABASE_PUBLISHABLE_KEY";
+‎  <footer>
+‎    © 2026 Nasir Video Website
+‎  </footer>
 ‎
-‎    // তোমার আগের ভিডিওর লিংক
-‎    const OLD_VIDEO =
-‎      "https://cvvttwjqbxlojfkktxzo.supabase.co/storage/v1/object/public/videos/0874e273816862a7c2de47e19e04c48d.mp4";
-‎
-‎    const videoBox = document.getElementById("videos");
-‎    const statusBox = document.getElementById("status");
-‎    const shown = new Set();
-‎
-‎    function addVideo(url, title) {
-‎      if (shown.has(url)) return;
-‎      shown.add(url);
-‎
-‎      const card = document.createElement("section");
-‎      card.className = "video-card";
-‎
-‎      const heading = document.createElement("h3");
-‎      heading.textContent = title;
-‎
-‎      const video = document.createElement("video");
-‎      video.controls = true;
-‎      video.preload = "metadata";
-‎      video.playsInline = true;
-‎
-‎      const source = document.createElement("source");
-‎      source.src = url;
-‎      source.type = "video/mp4";
-‎
-‎      video.appendChild(source);
-‎      card.appendChild(heading);
-‎      card.appendChild(video);
-‎      videoBox.appendChild(card);
-‎    }
-‎
-‎    async function loadVideos() {
-‎      // Supabase-এর তালিকা আসুক বা না আসুক, পুরোনো ভিডিও দেখাবে
-‎      addVideo(OLD_VIDEO, "আগের ভিডিও");
-‎
-‎      if (
-‎        !SUPABASE_KEY ||
-‎        SUPABASE_KEY === "sb_publishable_VdNFIUROKpE_EPQPpiWTUg_CdDvvd-R"
-‎      ) {
-‎        statusBox.textContent =
-‎          "আগের ভিডিও রাখা হয়েছে। সব ভিডিও দেখাতে Publishable key বসাও।";
-‎        return;
-‎      }
-‎
-‎      try {
-‎        const response = await fetch(
-‎          SUPABASE_URL + "/storage/v1/object/list/videos",
-‎          {
-‎            method: "POST",
-‎            headers: {
-‎              "apikey": SUPABASE_KEY,
-‎              "Content-Type": "application/json"
-‎            },
-‎            body: JSON.stringify({
-‎              prefix: "",
-‎              limit: 100,
-‎              offset: 0,
-‎              sortBy: {
-‎                column: "created_at",
-‎                order: "desc"
-‎              }
-‎            })
-‎          }
-‎        );
-‎
-‎        if (!response.ok) {
-‎          throw new Error("ভিডিও তালিকা আনার অনুমতি নেই");
-‎        }
-‎
-‎        const files = await response.json();
-‎        let count = 0;
-‎
-‎        for (const file of files) {
-‎          if (!file.name) continue;
-‎
-‎          // শুধু ভিডিও ফাইল দেখাবে
-‎          if (!/\.(mp4|webm|ogg|mov|m4v)$/i.test(file.name)) {
-‎            continue;
-‎          }
-‎
-‎          const encodedPath = file.name
-‎            .split("/")
-‎            .map(part => encodeURIComponent(part))
-‎            .join("/");
-‎
-‎          const url =
-‎            SUPABASE_URL +
-‎            "/storage/v1/object/public/videos/" +
-‎            encodedPath;
-‎
-‎          addVideo(url, file.name);
-‎          count++;
-‎        }
-‎
-‎        statusBox.textContent = count > 0
-‎          ? "ভিডিওগুলো লোড হয়েছে।"
-‎          : "আগের ভিডিও রাখা হয়েছে। নতুন ভিডিওর তালিকা খালি।";
-‎
-‎      } catch (error) {
-‎        statusBox.textContent =
-‎          "আগের ভিডিও রাখা হয়েছে। অন্য ভিডিও আনতে Supabase-এর অনুমতি পরীক্ষা করতে হবে।";
-‎      }
-‎    }
-‎
-‎    loadVideos();
-‎  </script>
 ‎</body>
 ‎</html>
