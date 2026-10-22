@@ -1,327 +1,190 @@
-‎<!DOCTYPE html>
+<!DOCTYPE html>
 ‎<html lang="bn">
 ‎<head>
-‎  <meta charset="UTF-8">
-‎  <meta name="viewport" content="width=device-width, initial-scale=1">
-‎  <title>Nasir Video Website</title>
-‎  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-‎  <style>
-‎    * { box-sizing: border-box; }
-‎    body {
-‎      margin: 0;
-‎      background: #101010;
-‎      color: white;
-‎      font-family: Arial, sans-serif;
-‎    }
-‎    header {
-‎      background: #087f5b;
-‎      text-align: center;
-‎      padding: 22px 10px;
-‎    }
-‎    h1 { margin: 0; font-size: 26px; }
-‎    .container {
-‎      max-width: 800px;
-‎      margin: 20px auto;
-‎      padding: 15px;
-‎    }
-‎    .panel, .video-card {
-‎      background: #202020;
-‎      padding: 15px;
-‎      border-radius: 12px;
-‎      margin-bottom: 16px;
-‎    }
-‎    input {
-‎      width: 100%;
-‎      padding: 12px;
-‎      margin: 7px 0;
-‎      border-radius: 7px;
-‎      border: 1px solid #555;
-‎      background: #151515;
-‎      color: white;
-‎    }
-‎    button {
-‎      background: #087f5b;
-‎      color: white;
-‎      border: 0;
-‎      padding: 12px 16px;
-‎      border-radius: 7px;
-‎      cursor: pointer;
-‎      margin: 5px 3px 5px 0;
-‎    }
-‎    button:disabled { opacity: .5; }
-‎    video {
-‎      width: 100%;
-‎      display: block;
-‎      background: black;
-‎      border-radius: 8px;
-‎    }
-‎    h2 { font-size: 18px; overflow-wrap: anywhere; }
-‎    #status {
-‎      white-space: pre-wrap;
-‎      overflow-wrap: anywhere;
-‎      color: #9ee7c5;
-‎    }
-‎    .hidden { display: none !important; }
-‎    footer {
-‎      text-align: center;
-‎      color: #aaa;
-‎      padding: 20px;
-‎    }
-‎  </style>
+‎<meta charset="UTF-8">
+‎<meta name="viewport" content="width=device-width, initial-scale=1">
+‎<title>Nasir Video Website</title>
+‎<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+‎<style>
+‎*{box-sizing:border-box}
+‎body{margin:0;background:#101510;color:#fff;font-family:Arial,sans-serif}
+‎header{background:#087f5b;padding:22px 14px;text-align:center}
+‎header h1{margin:0;font-size:27px}
+‎header p{margin:8px 0 0}
+‎main{max-width:850px;margin:auto;padding:16px}
+‎.panel{background:#1c261f;padding:16px;border-radius:12px;margin:16px 0}
+‎input,button{width:100%;padding:12px;margin:6px 0;border-radius:7px;font-size:16px}
+‎input{background:#fff;color:#111;border:1px solid #aaa}
+‎button{background:#087f5b;color:white;border:0;font-weight:bold}
+‎button:active{opacity:.8}
+‎.small{font-size:14px;color:#ccc}
+‎#status{overflow-wrap:anywhere;color:#b7f7cf}
+‎#videos{display:grid;grid-template-columns:1fr;gap:16px}
+‎.video{background:#202820;border-radius:12px;padding:12px;overflow:hidden}
+‎video{width:100%;max-height:420px;background:#000;border-radius:8px}
+‎.video h3{font-size:16px;overflow-wrap:anywhere}
+‎.hidden{display:none}
+‎footer{text-align:center;padding:25px;color:#aaa}
+‎@media(min-width:600px){#videos{grid-template-columns:1fr 1fr}}
+‎</style>
 ‎</head>
 ‎<body>
 ‎<header>
-‎  <h1>Nasir Video Website</h1>
-‎  <p>আমার ভিডিও সংগ্রহ</p>
+‎<h1>🎬 Nasir Video Website</h1>
+‎<p>আমার ভিডিও সংগ্রহ</p>
 ‎</header>
 ‎
-‎<main class="container">
-‎  <section class="panel">
-‎    <h2>🔐 Admin Login</h2>
+‎<main>
+‎<section class="panel">
+‎<h2>🔐 Admin Login</h2>
+‎<form id="loginForm">
+‎<input id="email" type="email" placeholder="Admin email" required>
+‎<input id="password" type="password" placeholder="Password" required>
+‎<button type="submit">Login</button>
+‎</form>
+‎<button id="logout" class="hidden" type="button">Logout</button>
 ‎
-‎    <form id="loginForm">
-‎      <input id="email" type="email"
-‎        placeholder="Admin email" required>
-‎      <input id="password" type="password"
-‎        placeholder="Password" required>
-‎      <button id="loginBtn" type="submit">Login</button>
-‎    </form>
+‎<div id="admin" class="hidden">
+‎<h3>📤 নতুন ভিডিও আপলোড</h3>
+‎<input id="file" type="file" accept="video/*">
+‎<button id="upload" type="button">⬆️ ভিডিও আপলোড</button>
+‎</div>
+‎<p id="status" role="status">ওয়েবসাইট প্রস্তুত হচ্ছে...</p>
+‎</section>
 ‎
-‎    <div id="adminPanel" class="hidden">
-‎      <p>Admin হিসেবে লগইন করা হয়েছে।</p>
-‎      <input id="videoFile" type="file"
-‎        accept="video/*">
-‎      <button id="uploadBtn" type="button">
-‎        ⬆️ ভিডিও আপলোড
-‎      </button>
-‎      <button id="logoutBtn" type="button">Logout</button>
-‎    </div>
-‎
-‎    <p id="status" role="status">ওয়েবসাইট প্রস্তুত হচ্ছে...</p>
-‎  </section>
-‎
-‎  <h2>🎬 সব ভিডিও</h2>
-‎  <section id="videoList">ভিডিও লোড হচ্ছে...</section>
+‎<h2>🎬 সব ভিডিও</h2>
+‎<p class="small">আপনার Storage-এর ভিডিওগুলো এখানে দেখাবে।</p>
+‎<div id="videos"></div>
+‎<button id="refresh" type="button">🔄 ভিডিও আবার লোড করুন</button>
 ‎</main>
 ‎
 ‎<footer>© 2026 Nasir Video Website</footer>
 ‎
 ‎<script>
-‎const SUPABASE_URL =
-‎  "https://cvvttwjqbxlojfkktxzo.supabase.co";
-‎
-‎const SUPABASE_KEY =
-‎  "sb_publishable_VdNFIUROKpE_EPQPpiWTUg_CdDvvd-R";
-‎
+‎const SUPABASE_URL = "https://cvvttwjqbxlojfkktxzo.supabase.co";
+‎const SUPABASE_KEY = "sb_publishable_VdNFIUROKpE_EPQPpiWTUg_CdDvvd-R";
 ‎const BUCKET = "videos";
 ‎
-‎// তোমার Supabase Auth User ID
-‎const ADMIN_UID = "792440e2-6849-466d-baf8-c8d38a49e5d6";
-‎
 ‎const db = window.supabase.createClient(
-‎  SUPABASE_URL,
-‎  SUPABASE_KEY
+‎  SUPABASE_URL, SUPABASE_KEY
 ‎);
 ‎
 ‎const $ = id => document.getElementById(id);
-‎const statusBox = $("status");
-‎const loginForm = $("loginForm");
-‎const adminPanel = $("adminPanel");
-‎const videoList = $("videoList");
-‎const loginBtn = $("loginBtn");
-‎const uploadBtn = $("uploadBtn");
+‎function message(text){ $("status").textContent = text; }
 ‎
-‎function status(message) {
-‎  statusBox.textContent = message;
+‎async function updateAuth(){
+‎  const {data, error} = await db.auth.getSession();
+‎  if(error){message("লগইন অবস্থা দেখা যায়নি: "+error.message);return;}
+‎  const loggedIn = !!data.session;
+‎  $("loginForm").classList.toggle("hidden", loggedIn);
+‎  $("logout").classList.toggle("hidden", !loggedIn);
+‎  $("admin").classList.toggle("hidden", !loggedIn);
+‎  if(loggedIn) message("Admin হিসেবে লগইন করা হয়েছে।");
 ‎}
 ‎
-‎function updateLoginUI(session) {
-‎  const isAdmin =
-‎    !!session && session.user.id === ADMIN_UID;
-‎
-‎  adminPanel.classList.toggle("hidden", !isAdmin);
-‎  loginForm.classList.toggle("hidden", isAdmin);
-‎
-‎  if (session && !isAdmin) {
-‎    status("এই অ্যাকাউন্টটি অ্যাডমিন নয়।");
-‎  }
-‎
-‎  return isAdmin;
-‎}
-‎
-‎async function loadVideos() {
-‎  videoList.textContent = "ভিডিও লোড হচ্ছে...";
-‎
-‎  try {
-‎    const { data, error } = await db.storage
-‎      .from(BUCKET)
-‎      .list("", {
-‎        limit: 1000,
-‎        sortBy: {
-‎          column: "created_at",
-‎          order: "desc"
-‎        }
-‎      });
-‎
-‎    if (error) throw error;
-‎
-‎    const videos = (data || []).filter(file =>
-‎      /\.(mp4|webm|ogg|mov|m4v)$/i.test(file.name)
-‎    );
-‎
-‎    videoList.replaceChildren();
-‎
-‎    if (videos.length === 0) {
-‎      videoList.textContent =
-‎        "কোনো ভিডিও পাওয়া যায়নি। Storage Policy পরীক্ষা করো।";
-‎      return;
-‎    }
-‎
-‎    for (const file of videos) {
-‎      const { data: publicData } = db.storage
-‎        .from(BUCKET)
-‎        .getPublicUrl(file.name);
-‎
-‎      const card = document.createElement("article");
-‎      card.className = "video-card";
-‎
-‎      const title = document.createElement("h2");
-‎      title.textContent = file.name;
-‎
-‎      const player = document.createElement("video");
-‎      player.controls = true;
-‎      player.playsInline = true;
-‎      player.preload = "metadata";
-‎      player.src = publicData.publicUrl;
-‎
-‎      card.append(title, player);
-‎      videoList.append(card);
-‎    }
-‎  } catch (error) {
-‎    videoList.textContent =
-‎      "ভিডিও লোড হয়নি: " + error.message;
-‎  }
-‎}
-‎
-‎loginForm.addEventListener("submit", async event => {
-‎  event.preventDefault();
-‎  loginBtn.disabled = true;
-‎  status("লগইন হচ্ছে...");
-‎
-‎  try {
-‎    const { data, error } = await db.auth
-‎      .signInWithPassword({
-‎        email: $("email").value.trim(),
-‎        password: $("password").value
-‎      });
-‎
-‎    if (error) throw error;
-‎
-‎    if (!updateLoginUI(data.session)) {
-‎      await db.auth.signOut();
-‎      status("এই অ্যাকাউন্টটি অ্যাডমিন নয়।");
-‎      return;
-‎    }
-‎
-‎    status("অ্যাডমিন লগইন সফল হয়েছে!");
-‎  } catch (error) {
-‎    status("লগইন হয়নি: " + error.message);
-‎  } finally {
-‎    loginBtn.disabled = false;
-‎  }
+‎$("loginForm").addEventListener("submit", async e=>{
+‎  e.preventDefault();
+‎  message("লগইন হচ্ছে...");
+‎  const {error} = await db.auth.signInWithPassword({
+‎    email:$("email").value.trim(),
+‎    password:$("password").value
+‎  });
+‎  if(error){message("লগইন ব্যর্থ: "+error.message);return;}
+‎  await updateAuth();
 ‎});
 ‎
-‎$("logoutBtn").addEventListener("click", async () => {
-‎  const { error } = await db.auth.signOut();
-‎
-‎  if (error) {
-‎    status("Logout হয়নি: " + error.message);
-‎    return;
-‎  }
-‎
-‎  updateLoginUI(null);
-‎  status("Logout হয়েছে।");
+‎$("logout").addEventListener("click", async ()=>{
+‎  const {error} = await db.auth.signOut();
+‎  if(error){message("Logout সমস্যা: "+error.message);return;}
+‎  await updateAuth();
+‎  message("Logout হয়েছে।");
 ‎});
 ‎
-‎uploadBtn.addEventListener("click", async () => {
-‎  const file = $("videoFile").files[0];
+‎async function loadVideos(){
+‎  const area=$("videos");
+‎  area.replaceChildren();
+‎  message("ভিডিও লোড হচ্ছে...");
 ‎
-‎  if (!file) {
-‎    status("আগে একটি ভিডিও নির্বাচন করো।");
+‎  const {data,error}=await db.storage.from(BUCKET).list("",{
+‎    limit:1000,
+‎    sortBy:{column:"created_at",order:"desc"}
+‎  });
+‎
+‎  if(error){
+‎    message("ভিডিও তালিকা লোড হয়নি: "+error.message+
+‎      " — Storage-এর SELECT policy পরীক্ষা করুন।");
 ‎    return;
 ‎  }
 ‎
-‎  if (!file.type.startsWith("video/")) {
-‎    status("একটি ভিডিও ফাইল নির্বাচন করো।");
+‎  const files=(data||[]).filter(f=>
+‎    f.name && /\.(mp4|webm|mov|m4v|ogv)$/i.test(f.name)
+‎  );
+‎
+‎  if(!files.length){
+‎    message("কোনো ভিডিও তালিকায় নেই। Bucket ও Storage policy পরীক্ষা করুন।");
 ‎    return;
 ‎  }
 ‎
-‎  uploadBtn.disabled = true;
+‎  files.forEach(f=>{
+‎    const url=db.storage.from(BUCKET).getPublicUrl(f.name).data.publicUrl;
+‎    const card=document.createElement("article");
+‎    card.className="video";
+‎    const title=document.createElement("h3");
+‎    title.textContent=f.name;
+‎    const player=document.createElement("video");
+‎    player.controls=true;
+‎    player.playsInline=true;
+‎    player.preload="metadata";
+‎    player.src=url;
+‎    card.append(title,player);
+‎    area.append(card);
+‎  });
+‎  message("মোট "+files.length+"টি ভিডিও পাওয়া গেছে।");
+‎}
 ‎
-‎  try {
-‎    const { data: authData, error: authError } =
-‎      await db.auth.getSession();
+‎$("upload").addEventListener("click",async ()=>{
+‎  const file=$("file").files[0];
+‎  if(!file){message("আগে একটি ভিডিও বেছে নিন।");return;}
+‎  if(!file.type.startsWith("video/")){
+‎    message("একটি ভিডিও ফাইল বেছে নিন।");return;
+‎  }
 ‎
-‎    if (authError) throw authError;
+‎  const {data:auth}=await db.auth.getSession();
+‎  if(!auth.session){message("আগে Admin Login করুন।");return;}
 ‎
-‎    const session = authData.session;
+‎  const safeName=file.name.replace(/[^a-zA-Z0-9._-]/g,"_");
+‎  const path=Date.now()+"_"+safeName;
+‎  $("upload").disabled=true;
+‎  message("ভিডিও আপলোড হচ্ছে... অপেক্ষা করুন।");
 ‎
-‎    if (!session || session.user.id !== ADMIN_UID) {
-‎      updateLoginUI(session);
-‎      throw new Error("আগে সঠিক Admin Login করো।");
-‎    }
+‎  try{
+‎    const {error}=await db.storage.from(BUCKET).upload(path,file,{
+‎      contentType:file.type,
+‎      upsert:false
+‎    });
+‎    if(error) throw error;
 ‎
-‎    const safeName = file.name.replace(
-‎      /[^a-zA-Z0-9._-]/g, "_"
-‎    );
-‎
-‎    const path = Date.now() + "-" + safeName;
-‎
-‎    status("ভিডিও আপলোড হচ্ছে... অপেক্ষা করো।");
-‎
-‎    const { error } = await db.storage
-‎      .from(BUCKET)
-‎      .upload(path, file, {
-‎        contentType: file.type,
-‎        upsert: false
-‎      });
-‎
-‎    if (error) throw error;
-‎
-‎    status("ভিডিও আপলোড সফল হয়েছে!");
-‎    $("videoFile").value = "";
+‎    $("file").value="";
+‎    message("ভিডিও আপলোড হয়েছে! তালিকা আপডেট হচ্ছে...");
 ‎    await loadVideos();
-‎
-‎  } catch (error) {
-‎    status("আপলোড হয়নি: " + error.message);
-‎  } finally {
-‎    uploadBtn.disabled = false;
+‎  }catch(err){
+‎    message("আপলোড ব্যর্থ: "+err.message+
+‎      " — Storage INSERT policy ও ফাইলের সাইজ পরীক্ষা করুন।");
+‎  }finally{
+‎    $("upload").disabled=false;
 ‎  }
 ‎});
 ‎
-‎async function start() {
-‎  try {
-‎    const { data, error } = await db.auth.getSession();
+‎$("refresh").addEventListener("click",loadVideos);
 ‎
-‎    if (error) throw error;
-‎
-‎    updateLoginUI(data.session);
-‎
-‎    if (!data.session) {
-‎      status("Admin Login করে ভিডিও আপলোড করতে পারো।");
-‎    }
-‎
-‎    await loadVideos();
-‎  } catch (error) {
-‎    status("সমস্যা: " + error.message);
-‎  }
-‎}
-‎
-‎db.auth.onAuthStateChange((event, session) => {
-‎  updateLoginUI(session);
+‎db.auth.onAuthStateChange(()=>{
+‎  setTimeout(updateAuth,0);
 ‎});
 ‎
-‎start();
+‎(async()=>{
+‎  await updateAuth();
+‎  await loadVideos();
+‎})();
 ‎</script>
 ‎</body>
 ‎</html>
